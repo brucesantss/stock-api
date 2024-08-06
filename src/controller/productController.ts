@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response) => {
     const { name, details, price, stock } = req.body;
 
     try {
@@ -30,4 +30,8 @@ const createProduct = async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);   
     }
+}
+
+export const getProducts = async (req: Request, res: Response) => {
+    
 }
