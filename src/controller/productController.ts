@@ -12,6 +12,11 @@ export const createProduct = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'todos os campos são obrigatório.' })
         }
 
+        const existProduct = await prisma.product.findUnique({ where: {name} });
+        if(existProduct){
+            return res.status(400).json({ message: 'não pode existir o mesmo produto (nomes iguais).' })
+        }
+
         const create = await prisma.product.create({
             data: {
                 name,
@@ -27,8 +32,9 @@ export const createProduct = async (req: Request, res: Response) => {
 
         return res.status(201).json({ message: 'produto criado.' })
 
-    } catch (error) {
-        console.log(error);   
+    } catch (err) {
+        console.log(err); 
+        return res.status(500).json({ message: err })  
     }
 }
 

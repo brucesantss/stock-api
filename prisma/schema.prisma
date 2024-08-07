@@ -15,7 +15,7 @@ datasource db {
 
 model Product {
   id      Int    @id @default(autoincrement())
-  name    String
+  name    String @unique
   details String
   price   Float
   stock   Int
