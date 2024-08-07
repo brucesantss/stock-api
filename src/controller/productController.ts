@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
+import slugify from "slugify";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export const createProduct = async (req: Request, res: Response) => {
     const { name, details, price, stock } = req.body;
+
+    const slug = slugify(name, '-');
 
     try {
 
@@ -22,7 +25,8 @@ export const createProduct = async (req: Request, res: Response) => {
                 name,
                 details,
                 price,
-                stock
+                stock,
+                slug
             },
         });
 
@@ -57,12 +61,14 @@ export const findBySlug = async (req: Request, res: Response) => {
 
     try {
         
-        const product = await prisma.product.findUnique({ where: {name: slug} })
-        if(!findBySlug){
+        const product = await prisma.product.findUnique({ where: {slug} })
+        if(!product){
             return res.status(404).json({ message: 'produto não encontrado :(' })
         }
 
-        return res.status(200).json({ message: product })
+        const { slug: _, ...productNoSlug } = product;
+
+        return res.status(200).json({ message: productNoSlug })
 
     } catch (err) {
         console.log(err);
