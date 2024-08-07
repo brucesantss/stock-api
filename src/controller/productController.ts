@@ -34,4 +34,14 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
     
+    try {
+        
+        const products = await prisma.product.findMany();
+
+        return res.status(200).json({ message: products })
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'ocorreu um erro :(' })
+    }
 }
