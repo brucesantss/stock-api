@@ -75,3 +75,45 @@ export const findBySlug = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'ocorreu um erro :(' })
     }
 }
+
+export const changeProductByID = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { name, details, price } = req.body;
+
+    const idConvert = parseInt(id); //id convertido para number
+
+    try {
+        
+        const product = await prisma.product.findUnique({ where: {id: idConvert} })
+        if(!product){
+            return res.status(404).json({ message: 'produto não encontrado :(' })
+        }
+
+        //propriedades obrigatórias
+        if(!name || !details || !price){
+            return res.status(400).json({ message: 'todos os campos são obrigatório.' })
+        }
+
+        //gerando slug novamente
+        const slug = slugify(name, '-');
+
+        //alterando as propriedades
+        const changeProduct = await prisma.product.update({
+            where: {id: idConvert},
+            data: {
+                name: name,
+                details: details,
+                price: price,
+                slug: slug
+            }
+         })
+
+        const { slug: _, ...productNoSlug } = changeProduct;
+
+        return res.status(200).json({ message: 'produto atulizado com sucesso.', product: productNoSlug })
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'ocorreu um erro :(' })
+    }
+}
